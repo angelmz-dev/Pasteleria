@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pasteleria.Data;
 using Pasteleria.Models;
@@ -22,6 +23,7 @@ namespace Pasteleria.Controllers
             return Ok(postres);
         }
 
+        [Authorize] //Protección para evitar que el usuario cree un postre falso
         [HttpPost]
         public async Task<ActionResult<Postres>> PostPostre(Postres nuevoPostre)
         {
