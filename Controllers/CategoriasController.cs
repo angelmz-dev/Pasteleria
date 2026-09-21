@@ -1,36 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Pasteleria.Data;
-using Pasteleria.Models;
-namespace Pasteleria.Controllers
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Pasteleria.Interfaces;
+
+[ApiController]
+[Route("api/[controller]")]
+public class PostresController : ControllerBase
 {
-    [Route("api/[controller]")] //La ruta de mi sitio 
-    [ApiController]
-    public class CategoriasController : ControllerBase
+    private readonly IPostreService _postreService;
+
+    // Inyectamos la interfaz, NO la implementación ni el contexto de BD
+    public PostresController(IPostreService postreService)
     {
-        private readonly PasteleriaContext _context; //Readonly se asegura de que una vez que haya recibido un valor _context
-        //ya no puede cambiar la variable, ni siquiera de manera accidental 
+        _postreService = postreService;
+    }
 
-        public CategoriasController(PasteleriaContext context) //Inyección de dependencias/clean architecture
-        {
-            _context = context;
-        }
-        //Endpoint
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categorias>>> GetCategorias() //Asyn Task quiere decir que la tarea es asíncrona permitiendo liberar el hilo para más tareas
-        {
-            //IEnumerable es una colección en forma de lista de tipo "Categorias"
-            var categorias = await _context.Categorias.ToListAsync(); //_context categorías es la tabla de la base de datos y ToListAsync se encarga de crear una Query SQL
-            return Ok(categorias); //OK devuelve 200. Await pausa el método hasta que regrese la lista transformada sin bloquear el server
-        }
+    [HttpGet("{id}")] //importante especificar la ruta para evitar colisiones 
+    public async Task<IActionResult> GetPostres()
+    {
+        var postres = await _postreService.ObtenerTodosAsync();
 
-        [HttpPost]
-        public async Task<ActionResult<Categorias>> PostCategorias(Categorias nuevaCategoria)
-        {
-            _context.Categorias.Add(nuevaCategoria); //utilizamos _context para viajar hasta la db
-            await _context.SaveChangesAsync(); //await espera a que se realicen los cambios (SaveChangesAsync()) para enviarlos a SQL Server
-            return Ok(nuevaCategoria); //Se devuelve la categoría recien agregada 
-        }
-        
+        if (!postres.Any())
+            return NotFound(new { mensaje = "No se encontraron postres registrados." });
+
+        return Ok(postres);
     }
 }

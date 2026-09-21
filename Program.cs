@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Pasteleria.Data;
+using Pasteleria.Interfaces;
+using Pasteleria.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +69,9 @@ builder.Services.AddDbContext<PasteleriaContext>(opciones =>
 {
     opciones.UseSqlServer(builder.Configuration.GetConnectionString("ConexionPasteleria")); //"ConexionPasteleria es la variable de entorno de appsettings.json
 });
+
+// Registrar el servicio en el contenedor de Inyección de Dependencias
+builder.Services.AddScoped<IPostreService, PostreService>();
 
 var app = builder.Build();
 

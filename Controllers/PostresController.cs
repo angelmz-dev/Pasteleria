@@ -16,7 +16,7 @@ namespace Pasteleria.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet] //Controlador decorado 
         public async Task<ActionResult<IEnumerable<Postres>>> GetPostres()
         {
             var postres = await _context.Postres.Include( p => p.Categorias).ToListAsync();
@@ -24,7 +24,7 @@ namespace Pasteleria.Controllers
         }
 
         [Authorize] //Protección para evitar que el usuario cree un postre falso
-        [HttpPost]
+        [HttpPost] //Más decoraciones para el PostresController
         public async Task<ActionResult<Postres>> PostPostre(Postres nuevoPostre)
         {
             // Verificamos si la categoría que nos enviaron realmente existe en SQL Server
